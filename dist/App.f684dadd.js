@@ -19076,15 +19076,15 @@ const Broadside = {
       };
     }
 
-    let bottom = (settings.height - 1) * settings.width;
+    let end = settings.height * settings.width - 1;
 
-    for (let i = 0; i < settings.width; i++) {
+    for (let i = 0; i < 2; i++) {
       cells[i].ship = {
         player: 0,
         health: 3,
         dir: "S"
       };
-      cells[bottom + i].ship = {
+      cells[end - i].ship = {
         player: 1,
         health: 3,
         dir: "N"
@@ -19138,6 +19138,21 @@ const Broadside = {
         destCell.ship = null;
       }
     }
+  },
+  endIf: (G, ctx) => {
+    var total = [0, 0];
+    G.cells.forEach(cell => {
+      if (cell.ship) total[cell.ship.player]++;
+    });
+    if (total[0] == 0 && total[1] == 0) return {
+      draw: true
+    };
+    if (total[0] == 0) return {
+      winner: 1
+    };
+    if (total[1] == 0) return {
+      winner: 0
+    };
   }
 };
 exports.Broadside = Broadside;
@@ -19327,7 +19342,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57618" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65318" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
