@@ -70,7 +70,7 @@ class TicTacToeClient {
         // Update cells to display the values in game state.
         cells.forEach(cell => {
             const cellId = parseInt(cell.dataset.id);
-            const ship = state.G.cells[cellId];
+            const ship = state.G.cells[cellId].ship;
             this.displayShip(cell, ship);
         });
         // Get the gameover message element.

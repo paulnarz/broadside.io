@@ -7,13 +7,17 @@ const settings = {
 
 export const Broadside = {
     setup: () => {
-        const cells = Array(settings.width * settings.height).fill(null); 
+        const cells = [];
+
+        for (let i = 0; i < settings.width * settings.height; i++) {
+            cells[i] = { ship: null };
+        }
 
         let bottom = (settings.height - 1) * settings.width;
 
         for (let i = 0; i < settings.width; i++) {
-            cells[i] = { player: 0, health: 3, dir: "S" };
-            cells[bottom + i] = { player: 1, health: 3, dir: "N" };
+            cells[i].ship = { player: 0, health: 3, dir: "S" };
+            cells[bottom + i].ship = { player: 1, health: 3, dir: "N" };
         }
              
         return {
@@ -27,16 +31,13 @@ export const Broadside = {
 
     moves: {
         moveShip: (G, ctx, x1, y1, x2, y2) => {
-            if (x1 < 0 || x1 >= settings.width)
+            const sourceIndex = getIndex(x1, y1);
+            const destIndex = getIndex(x2, y2);
+
+            if (sourceIndex == -1)
                 return INVALID_MOVE;
 
-            if (x2 < 0 || x2 >= settings.width)
-                return INVALID_MOVE;
-
-            if (y1 < 0 || y1 >= settings.height)
-                return INVALID_MOVE;
-
-            if (y2 < 0 || y2 >= settings.height)
+            if (destIndex == -1)
                 return INVALID_MOVE;
 
             if (x1 === x2 && y1 === y2)
@@ -45,37 +46,59 @@ export const Broadside = {
             if (x1 !== x2 && y1 !== y2)
                 return INVALID_MOVE;
 
-            const sourceIndex = y1 * settings.width + x1;
-            const destIndex = y2 * settings.width + x2;
-
-            const source = G.cells[sourceIndex];
-
-            if (!source)
+            const sourceCell = G.cells[sourceIndex];
+            
+            if (!sourceCell.ship)
                 return INVALID_MOVE;
 
-            if (source.player != ctx.currentPlayer)
+            const ship = sourceCell.ship;
+
+            if (ship.player != ctx.currentPlayer)
                 return INVALID_MOVE;
 
-            const dest = G.cells[destIndex];
+            const destCell = G.cells[destIndex];
 
-            if (dest)
+            if (destCell.ship)
                 return INVALID_MOVE;
 
-            G.cells[destIndex] = G.cells[sourceIndex];
-            G.cells[sourceIndex] = null;
+            //do the move
+            destCell.ship = ship;
+            sourceCell.ship = null;
 
             if (y2 < y1) {
-                source.dir = "N";
+                ship.dir = "N";
             }
             else if (x2 > x1) {
-                source.dir = "E";
+                ship.dir = "E";
             }
             else if (y2 > y1) {
-                source.dir = "S";
+                ship.dir = "S";
             }
             else if (x2 < x1) {
-                source.dir = "W";
-            }
+                ship.dir = "W";
+            }            
         },
     },
 };
+
+function getIndex(x, y) {
+    if (x < 0)
+        return -1;
+    if (x >= settings.width)
+        return -1;
+    if (y < 0)
+        return -1;
+    if (y >= settings.height)
+        return -1;
+
+    return y * settings.width + x;
+}
+
+function getCell(G, x, y) {
+    var index = getIndex(x, y);
+
+    if (index === -1)
+        return null;
+
+    return G.cells[index];
+}

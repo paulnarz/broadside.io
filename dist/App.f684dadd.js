@@ -19068,16 +19068,23 @@ const settings = {
 };
 const Broadside = {
   setup: () => {
-    const cells = Array(settings.width * settings.height).fill(null);
+    const cells = [];
+
+    for (let i = 0; i < settings.width * settings.height; i++) {
+      cells[i] = {
+        ship: null
+      };
+    }
+
     let bottom = (settings.height - 1) * settings.width;
 
     for (let i = 0; i < settings.width; i++) {
-      cells[i] = {
+      cells[i].ship = {
         player: 0,
         health: 3,
         dir: "S"
       };
-      cells[bottom + i] = {
+      cells[bottom + i].ship = {
         player: 1,
         health: 3,
         dir: "N"
@@ -19093,35 +19100,49 @@ const Broadside = {
   },
   moves: {
     moveShip: (G, ctx, x1, y1, x2, y2) => {
-      if (x1 < 0 || x1 >= settings.width) return _core.INVALID_MOVE;
-      if (x2 < 0 || x2 >= settings.width) return _core.INVALID_MOVE;
-      if (y1 < 0 || y1 >= settings.height) return _core.INVALID_MOVE;
-      if (y2 < 0 || y2 >= settings.height) return _core.INVALID_MOVE;
+      const sourceIndex = getIndex(x1, y1);
+      const destIndex = getIndex(x2, y2);
+      if (sourceIndex == -1) return _core.INVALID_MOVE;
+      if (destIndex == -1) return _core.INVALID_MOVE;
       if (x1 === x2 && y1 === y2) return _core.INVALID_MOVE;
       if (x1 !== x2 && y1 !== y2) return _core.INVALID_MOVE;
-      const sourceIndex = y1 * settings.width + x1;
-      const destIndex = y2 * settings.width + x2;
-      const source = G.cells[sourceIndex];
-      if (!source) return _core.INVALID_MOVE;
-      if (source.player != ctx.currentPlayer) return _core.INVALID_MOVE;
-      const dest = G.cells[destIndex];
-      if (dest) return _core.INVALID_MOVE;
-      G.cells[destIndex] = G.cells[sourceIndex];
-      G.cells[sourceIndex] = null;
+      const sourceCell = G.cells[sourceIndex];
+      if (!sourceCell.ship) return _core.INVALID_MOVE;
+      const ship = sourceCell.ship;
+      if (ship.player != ctx.currentPlayer) return _core.INVALID_MOVE;
+      const destCell = G.cells[destIndex];
+      if (destCell.ship) return _core.INVALID_MOVE; //do the move
+
+      destCell.ship = ship;
+      sourceCell.ship = null;
 
       if (y2 < y1) {
-        source.dir = "N";
+        ship.dir = "N";
       } else if (x2 > x1) {
-        source.dir = "E";
+        ship.dir = "E";
       } else if (y2 > y1) {
-        source.dir = "S";
+        ship.dir = "S";
       } else if (x2 < x1) {
-        source.dir = "W";
+        ship.dir = "W";
       }
     }
   }
 };
 exports.Broadside = Broadside;
+
+function getIndex(x, y) {
+  if (x < 0) return -1;
+  if (x >= settings.width) return -1;
+  if (y < 0) return -1;
+  if (y >= settings.height) return -1;
+  return y * settings.width + x;
+}
+
+function getCell(G, x, y) {
+  var index = getIndex(x, y);
+  if (index === -1) return null;
+  return G.cells[index];
+}
 },{"boardgame.io/core":"node_modules/boardgame.io/dist/esm/core.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
@@ -19202,7 +19223,7 @@ class TicTacToeClient {
 
     cells.forEach(cell => {
       const cellId = parseInt(cell.dataset.id);
-      const ship = state.G.cells[cellId];
+      const ship = state.G.cells[cellId].ship;
       this.displayShip(cell, ship);
     }); // Get the gameover message element.
 
@@ -19257,7 +19278,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55633" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51728" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
