@@ -76,10 +76,42 @@ export const Broadside = {
             }
             else if (x2 < x1) {
                 ship.dir = "W";
-            }            
+            }
+
+            if (isNS(ship.dir)) {
+                doDamage(G, ship, x2 - 1, y2);
+                doDamage(G, ship, x2 + 1, y2);                
+            }
+            else {
+                doDamage(G, ship, x2, y2 - 1);
+                doDamage(G, ship, x2, y2 + 1);
+            }
+
+            if (ship.health <= 0) {
+                destCell.ship = null;
+            }
         },
     },
 };
+
+function doDamage(G, ship, x, y) {
+    const other = getCell(G, x, y);
+    if (other && other.ship && other.ship.player != ship.player) {        
+        if (isNS(ship.dir) == isNS(other.ship.dir)) {
+            ship.health--;
+        }
+        other.ship.health--;
+        if (other.ship.health <= 0) {
+            other.ship = null;
+        }
+    }
+}
+
+function isNS(dir) {
+    if (dir == "N" || dir == "S")
+        return true;
+    return false;
+}
 
 function getIndex(x, y) {
     if (x < 0)
