@@ -1,65 +1,81 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 
-export const TicTacToe = {
-    setup: () => ({ cells: Array(9).fill(null) }),
+const settings = {
+    width: 5,
+    height: 5
+}
+
+export const Broadside = {
+    setup: () => {
+        const cells = Array(settings.width * settings.height).fill(null); 
+
+        let bottom = (settings.height - 1) * settings.width;
+
+        for (let i = 0; i < settings.width; i++) {
+            cells[i] = { player: 0, health: 3, dir: "S" };
+            cells[bottom + i] = { player: 1, health: 3, dir: "N" };
+        }
+             
+        return {
+            cells: cells
+        };
+    },
 
     turn: {
         moveLimit: 1,
     },
 
     moves: {
-        clickCell: (G, ctx, id) => {
-            if (G.cells[id] !== null) {
+        moveShip: (G, ctx, x1, y1, x2, y2) => {
+            if (x1 < 0 || x1 >= settings.width)
                 return INVALID_MOVE;
+
+            if (x2 < 0 || x2 >= settings.width)
+                return INVALID_MOVE;
+
+            if (y1 < 0 || y1 >= settings.height)
+                return INVALID_MOVE;
+
+            if (y2 < 0 || y2 >= settings.height)
+                return INVALID_MOVE;
+
+            if (x1 === x2 && y1 === y2)
+                return INVALID_MOVE;
+
+            if (x1 !== x2 && y1 !== y2)
+                return INVALID_MOVE;
+
+            const sourceIndex = y1 * settings.width + x1;
+            const destIndex = y2 * settings.width + x2;
+
+            const source = G.cells[sourceIndex];
+
+            if (!source)
+                return INVALID_MOVE;
+
+            if (source.player != ctx.currentPlayer)
+                return INVALID_MOVE;
+
+            const dest = G.cells[destIndex];
+
+            if (dest)
+                return INVALID_MOVE;
+
+            G.cells[destIndex] = G.cells[sourceIndex];
+            G.cells[sourceIndex] = null;
+
+            if (y2 < y1) {
+                source.dir = "N";
             }
-
-            G.cells[id] = ctx.currentPlayer;
-        },
-    },
-
-    endIf: (G, ctx) => {
-        if (IsVictory(G.cells)) {
-            return { winner: ctx.currentPlayer };
-        }
-        if (IsDraw(G.cells)) {
-            return { draw: true };
-        }
-    },
-
-    ai: {
-        enumerate: (G, ctx) => {
-            let moves = [];
-            for (let i = 0; i < 9; i++) {
-                if (G.cells[i] === null) {
-                    moves.push({ move: 'clickCell', args: [i] });
-                }
+            else if (x2 > x1) {
+                source.dir = "E";
             }
-            return moves;
+            else if (y2 > y1) {
+                source.dir = "S";
+            }
+            else if (x2 < x1) {
+                source.dir = "W";
+            }
         },
     },
 };
-
-function IsVictory(cells) {
-    const positions = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
-
-    const isRowComplete = row => {
-        const symbols = row.map(i => cells[i]);
-        return symbols.every(i => i !== null && i === symbols[0]);
-    };
-
-    return positions.map(isRowComplete).some(i => i === true);
-}
-
-// Return true if all `cells` are occupied.
-function IsDraw(cells) {
-    return cells.filter(c => c === null).length === 0;
-}

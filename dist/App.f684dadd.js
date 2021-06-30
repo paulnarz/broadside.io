@@ -19058,73 +19058,70 @@ exports.PlayerView = PlayerView;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TicTacToe = void 0;
+exports.Broadside = void 0;
 
 var _core = require("boardgame.io/core");
 
-const TicTacToe = {
-  setup: () => ({
-    cells: Array(9).fill(null)
-  }),
+const settings = {
+  width: 5,
+  height: 5
+};
+const Broadside = {
+  setup: () => {
+    const cells = Array(settings.width * settings.height).fill(null);
+    let bottom = (settings.height - 1) * settings.width;
+
+    for (let i = 0; i < settings.width; i++) {
+      cells[i] = {
+        player: 0,
+        health: 3,
+        dir: "S"
+      };
+      cells[bottom + i] = {
+        player: 1,
+        health: 3,
+        dir: "N"
+      };
+    }
+
+    return {
+      cells: cells
+    };
+  },
   turn: {
     moveLimit: 1
   },
   moves: {
-    clickCell: (G, ctx, id) => {
-      if (G.cells[id] !== null) {
-        return _core.INVALID_MOVE;
+    moveShip: (G, ctx, x1, y1, x2, y2) => {
+      if (x1 < 0 || x1 >= settings.width) return _core.INVALID_MOVE;
+      if (x2 < 0 || x2 >= settings.width) return _core.INVALID_MOVE;
+      if (y1 < 0 || y1 >= settings.height) return _core.INVALID_MOVE;
+      if (y2 < 0 || y2 >= settings.height) return _core.INVALID_MOVE;
+      if (x1 === x2 && y1 === y2) return _core.INVALID_MOVE;
+      if (x1 !== x2 && y1 !== y2) return _core.INVALID_MOVE;
+      const sourceIndex = y1 * settings.width + x1;
+      const destIndex = y2 * settings.width + x2;
+      const source = G.cells[sourceIndex];
+      if (!source) return _core.INVALID_MOVE;
+      if (source.player != ctx.currentPlayer) return _core.INVALID_MOVE;
+      const dest = G.cells[destIndex];
+      if (dest) return _core.INVALID_MOVE;
+      G.cells[destIndex] = G.cells[sourceIndex];
+      G.cells[sourceIndex] = null;
+
+      if (y2 < y1) {
+        source.dir = "N";
+      } else if (x2 > x1) {
+        source.dir = "E";
+      } else if (y2 > y1) {
+        source.dir = "S";
+      } else if (x2 < x1) {
+        source.dir = "W";
       }
-
-      G.cells[id] = ctx.currentPlayer;
-    }
-  },
-  endIf: (G, ctx) => {
-    if (IsVictory(G.cells)) {
-      return {
-        winner: ctx.currentPlayer
-      };
-    }
-
-    if (IsDraw(G.cells)) {
-      return {
-        draw: true
-      };
-    }
-  },
-  ai: {
-    enumerate: (G, ctx) => {
-      let moves = [];
-
-      for (let i = 0; i < 9; i++) {
-        if (G.cells[i] === null) {
-          moves.push({
-            move: 'clickCell',
-            args: [i]
-          });
-        }
-      }
-
-      return moves;
     }
   }
 };
-exports.TicTacToe = TicTacToe;
-
-function IsVictory(cells) {
-  const positions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-
-  const isRowComplete = row => {
-    const symbols = row.map(i => cells[i]);
-    return symbols.every(i => i !== null && i === symbols[0]);
-  };
-
-  return positions.map(isRowComplete).some(i => i === true);
-} // Return true if all `cells` are occupied.
-
-
-function IsDraw(cells) {
-  return cells.filter(c => c === null).length === 0;
-}
+exports.Broadside = Broadside;
 },{"boardgame.io/core":"node_modules/boardgame.io/dist/esm/core.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
@@ -19132,27 +19129,34 @@ var _client = require("boardgame.io/client");
 
 var _Game = require("./Game");
 
+const settings = {
+  width: 5,
+  height: 5,
+  colors: ["blue", "red"]
+};
+
 class TicTacToeClient {
   constructor(rootElement) {
     this.client = (0, _client.Client)({
-      game: _Game.TicTacToe
+      game: _Game.Broadside
     });
     this.client.start();
     this.rootElement = rootElement;
     this.createBoard();
     this.attachListeners();
     this.client.subscribe(state => this.update(state));
+    this._selectedCell = null;
   }
 
   createBoard() {
     // Create cells in rows for the Tic-Tac-Toe board.
     const rows = [];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < settings.height; i++) {
       const cells = [];
 
-      for (let j = 0; j < 3; j++) {
-        const id = 3 * i + j;
+      for (let j = 0; j < settings.width; j++) {
+        const id = settings.height * i + j;
         cells.push(`<td class="cell" data-id="${id}"></td>`);
       }
 
@@ -19172,7 +19176,17 @@ class TicTacToeClient {
     // `data-id` attribute and make the `clickCell` move.
     const handleCellClick = event => {
       const id = parseInt(event.target.dataset.id);
-      this.client.moves.clickCell(id);
+
+      if (this._selectedCell === null) {
+        this._selectedCell = id;
+      } else {
+        const x1 = this._selectedCell % settings.width;
+        const y1 = Math.floor(this._selectedCell / settings.height);
+        const x2 = id % settings.width;
+        const y2 = Math.floor(id / settings.height);
+        this._selectedCell = null;
+        this.client.moves.moveShip(x1, y1, x2, y2);
+      }
     }; // Attach the event listener to each of the board cells.
 
 
@@ -19188,8 +19202,8 @@ class TicTacToeClient {
 
     cells.forEach(cell => {
       const cellId = parseInt(cell.dataset.id);
-      const cellValue = state.G.cells[cellId];
-      cell.textContent = cellValue !== null ? cellValue : '';
+      const ship = state.G.cells[cellId];
+      this.displayShip(cell, ship);
     }); // Get the gameover message element.
 
     const messageEl = this.rootElement.querySelector('.winner'); // Update the element to show a winner if any.
@@ -19198,6 +19212,16 @@ class TicTacToeClient {
       messageEl.textContent = state.ctx.gameover.winner !== undefined ? 'Winner: ' + state.ctx.gameover.winner : 'Draw!';
     } else {
       messageEl.textContent = '';
+    }
+  }
+
+  displayShip(cell, ship) {
+    if (ship) {
+      cell.textContent = ship.health + " " + ship.dir;
+      cell.style.color = settings.colors[ship.player];
+    } else {
+      cell.textContent = "";
+      cell.style.color = "";
     }
   }
 
@@ -19233,7 +19257,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58890" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55633" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
