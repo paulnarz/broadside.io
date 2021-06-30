@@ -16,6 +16,7 @@ class TicTacToeClient {
         this.attachListeners();
         this.client.subscribe(state => this.update(state));
         this._selectedCell = null;
+        this._selectedId = null;
     }
 
     createBoard() {
@@ -44,14 +45,18 @@ class TicTacToeClient {
         const handleCellClick = event => {
             const id = parseInt(event.target.dataset.id);
 
-            if (this._selectedCell === null) {
-                this._selectedCell = id;
+            if (this._selectedId === null) {
+                this._selectedId = id;
+                this._selectedCell = this.rootElement.querySelector('.cell[data-id="' + id + '"]');
+                this._selectedCell.classList.add("selected");
             }
             else {
-                const x1 = this._selectedCell % settings.width;
-                const y1 = Math.floor(this._selectedCell / settings.height);
+                const x1 = this._selectedId % settings.width;
+                const y1 = Math.floor(this._selectedId / settings.height);
                 const x2 = id % settings.width;
                 const y2 = Math.floor(id / settings.height);
+                this._selectedId = null;
+                this._selectedCell.classList.remove("selected");
                 this._selectedCell = null;
 
                 this.client.moves.moveShip(x1, y1, x2, y2);
