@@ -56,10 +56,10 @@ export const Broadside = {
             if (ship.player != ctx.currentPlayer)
                 return INVALID_MOVE;
 
-            const destCell = G.cells[destIndex];
-
-            if (destCell.ship)
+            if (!checkPath(G, x1, y1, x2, y2))
                 return INVALID_MOVE;
+
+            const destCell = G.cells[destIndex];
 
             //do the move
             destCell.ship = ship;
@@ -93,6 +93,21 @@ export const Broadside = {
         },
     },
 };
+
+function checkPath(G, x1, y1, x2, y2) {
+    const dx = Math.sign(x2 - x1);
+    const dy = Math.sign(y2 - y1);
+    let cx = x1;
+    let cy = y1;
+    while (cx != x2 || cy != y2) {
+        cx += dx;
+        cy += dy;
+        let cell = getCell(G, cx, cy);
+        if (cell.ship)
+            return false;
+    }
+    return true;
+}
 
 function doDamage(G, ship, x, y) {
     const other = getCell(G, x, y);
