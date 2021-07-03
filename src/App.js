@@ -7,7 +7,7 @@ const settings = {
     colors: ["blue", "red"]
 }
 
-class TicTacToeClient {
+class BroadSideClient {
     constructor(rootElement) {
         this.client = Client({ game: Broadside });
         this.client.start();
@@ -104,4 +104,4 @@ class TicTacToeClient {
 }
 
 const appElement = document.getElementById('app');
-const app = new TicTacToeClient(appElement);
+const app = new BroadSideClient(appElement);
