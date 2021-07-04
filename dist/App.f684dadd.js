@@ -16543,6 +16543,7 @@ function instance$x($$self, $$props, $$invalidate) {
     bot = new _ai92d.M({
       game: client.game,
       enumerate: client.game.ai.enumerate,
+      objectives: client.game.ai.objectives,
       iterationCallback
     });
     bot.setOpt("async", true);
@@ -19089,7 +19090,12 @@ const Broadside = {
         health: 3,
         dir: "N"
       };
-    }
+    } //for (let i = 0; i < settings.width; i++) {
+    //    cells[i].ship = { player: 0, health: 1, dir: "S" };
+    //    cells[i + settings.width].ship = { player: 0, health: 1, dir: "S" };
+    //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
+    //}
+
 
     return {
       cells: cells
@@ -19174,7 +19180,32 @@ const Broadside = {
       }
 
       return moves;
-    }
+    },
+    objectives: () => ({
+      'damage-05': {
+        checker: (G, ctx) => {
+          var otherHealth = 0;
+          var myHealth = 0;
+
+          for (let y = 0; y < settings.height; y++) {
+            for (let x = 0; x < settings.width; x++) {
+              var cell = getCell(G, x, y);
+
+              if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
+                myHealth += cell.ship.health;
+              }
+
+              if (cell && cell.ship && cell.ship.player != ctx.currentPlayer) {
+                otherHealth += cell.ship.health;
+              }
+            }
+          }
+
+          if (myHealth > otherHealth) return true;
+        },
+        weight: 10
+      }
+    })
   }
 };
 exports.Broadside = Broadside;
@@ -19389,7 +19420,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57836" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52292" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

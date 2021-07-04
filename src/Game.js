@@ -20,6 +20,12 @@ export const Broadside = {
             cells[end - i].ship = { player: 1, health: 3, dir: "N" };
         }
 
+        //for (let i = 0; i < settings.width; i++) {
+        //    cells[i].ship = { player: 0, health: 1, dir: "S" };
+        //    cells[i + settings.width].ship = { player: 0, health: 1, dir: "S" };
+        //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
+        //}
+
         return {
             cells: cells
         };
@@ -125,7 +131,30 @@ export const Broadside = {
             }
 
             return moves;
-        }
+        },
+
+        objectives: () => ({
+            'damage-05': {
+                checker: (G, ctx) => {                    
+                    var otherHealth = 0;
+                    var myHealth = 0;
+                    for (let y = 0; y < settings.height; y++) {
+                        for (let x = 0; x < settings.width; x++) {
+                            var cell = getCell(G, x, y);
+                            if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
+                                myHealth += cell.ship.health;
+                            }
+                            if (cell && cell.ship && cell.ship.player != ctx.currentPlayer) {
+                                otherHealth += cell.ship.health;
+                            }
+                        }
+                    }
+                    if (myHealth > otherHealth)
+                        return true;
+                },
+                weight: 10,
+            },
+        })
     }
 };
 
