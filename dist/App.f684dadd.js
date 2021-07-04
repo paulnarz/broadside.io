@@ -19153,9 +19153,48 @@ const Broadside = {
     if (total[1] == 0) return {
       winner: 0
     };
+  },
+  ai: {
+    enumerate: (G, ctx) => {
+      let moves = [];
+
+      for (let y = 0; y < settings.height; y++) {
+        for (let x = 0; x < settings.width; x++) {
+          var cell = getCell(G, x, y);
+
+          if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
+            availableMoves(G, x, y, (x2, y2) => {
+              moves.push({
+                move: 'moveShip',
+                args: [x, y, x2, y2]
+              });
+            });
+          }
+        }
+      }
+
+      return moves;
+    }
   }
 };
 exports.Broadside = Broadside;
+
+function availableMoves(G, x, y, func) {
+  availablePath(G, x, y, 1, 0, func);
+  availablePath(G, x, y, -1, 0, func);
+  availablePath(G, x, y, 0, 1, func);
+  availablePath(G, x, y, 0, -1, func);
+}
+
+function availablePath(G, x, y, dx, dy, func) {
+  while (true) {
+    x += dx;
+    y += dy;
+    let cell = getCell(G, x, y);
+    if (!cell || cell.ship) break;
+    func(x, y);
+  }
+}
 
 function checkPath(G, x1, y1, x2, y2) {
   const dx = Math.sign(x2 - x1);
@@ -19220,7 +19259,7 @@ const settings = {
   colors: ["blue", "red"]
 };
 
-class TicTacToeClient {
+class BroadSideClient {
   constructor(rootElement) {
     this.client = (0, _client.Client)({
       game: _Game.Broadside
@@ -19321,7 +19360,7 @@ class TicTacToeClient {
 }
 
 const appElement = document.getElementById('app');
-const app = new TicTacToeClient(appElement);
+const app = new BroadSideClient(appElement);
 },{"boardgame.io/client":"node_modules/boardgame.io/dist/esm/client.js","./Game":"src/Game.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -19350,7 +19389,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53864" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57836" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

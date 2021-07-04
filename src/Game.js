@@ -19,7 +19,7 @@ export const Broadside = {
             cells[i].ship = { player: 0, health: 3, dir: "S" };
             cells[end - i].ship = { player: 1, health: 3, dir: "N" };
         }
-             
+
         return {
             cells: cells
         };
@@ -47,7 +47,7 @@ export const Broadside = {
                 return INVALID_MOVE;
 
             const sourceCell = G.cells[sourceIndex];
-            
+
             if (!sourceCell.ship)
                 return INVALID_MOVE;
 
@@ -80,7 +80,7 @@ export const Broadside = {
 
             if (isNS(ship.dir)) {
                 doDamage(G, ship, x2 - 1, y2);
-                doDamage(G, ship, x2 + 1, y2);                
+                doDamage(G, ship, x2 + 1, y2);
             }
             else {
                 doDamage(G, ship, x2, y2 - 1);
@@ -110,8 +110,46 @@ export const Broadside = {
         if (total[1] == 0)
             return { winner: 0 };
     },
+
+    ai: {
+        enumerate: (G, ctx) => {
+            let moves = [];
+
+            for (let y = 0; y < settings.height; y++) {
+                for (let x = 0; x < settings.width; x++) {
+                    var cell = getCell(G, x, y);
+                    if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
+                        availableMoves(G, x, y, (x2, y2) => { moves.push({ move: 'moveShip', args: [x, y, x2, y2] }); });
+                    }
+                }
+            }
+
+            return moves;
+        }
+    }
 };
 
+
+function availableMoves(G, x, y, func) {
+    availablePath(G, x, y, 1, 0, func);
+    availablePath(G, x, y, -1, 0, func);
+    availablePath(G, x, y, 0, 1, func);
+    availablePath(G, x, y, 0, -1, func);
+}
+
+function availablePath(G, x, y, dx, dy, func) {
+    while (true) {
+        x += dx;
+        y += dy;
+        let cell = getCell(G, x, y);
+
+        if (!cell || cell.ship)
+            break;
+
+        func(x, y);
+    }
+}
+    
 function checkPath(G, x1, y1, x2, y2) {
     const dx = Math.sign(x2 - x1);
     const dy = Math.sign(y2 - y1);
