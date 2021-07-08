@@ -1,4 +1,18 @@
+export const settings = {
+    width: 0,
+    height: 0,
+    colors: ["red", "blue"]
+}
+
 export function createMap() {
+    //var map = createDefaultMap();
+    var map = createTestMap();
+    settings.width = map.width;
+    settings.height = map.height;
+    return map;
+}
+
+function createDefaultMap() {
     const map_string = `
 XX..1111111111X
 ..............X
@@ -49,10 +63,10 @@ XXXXXXXXXX00000
     };
 }
 
-export function createTestMap() {
+function createTestMap() {
     const cells = [];
-    let height = 5;
-    let width = 5;
+    let height = 3;
+    let width = 3;
 
     for (let i = 0; i < width * height; i++) {
         cells[i] = { ship: null };
@@ -60,16 +74,16 @@ export function createTestMap() {
 
     let end = height * width - 1;
 
-    for (let i = 0; i < 2; i++) {
-        cells[i].ship = { player: 0, health: 3, dir: "S" };
-        cells[end - i].ship = { player: 1, health: 3, dir: "N" };
+    for (let i = 0; i < 1; i++) {
+        cells[i].ship = { player: 1, health: 3, dir: "S" };
+        cells[end - i].ship = { player: 0, health: 3, dir: "N" };
     }
 
+    cells[5].ship = { player: 0, health: 3, dir: "N" };
+    cells[6].ship = { player: 0, health: 3, dir: "N" };
+
     //walls
-    cells[10] = null;
-    cells[11] = null;
-    cells[13] = null;
-    cells[14] = null;
+    //cells[4] = null;
 
     //for (let i = 0; i < width; i++) {
     //    cells[i].ship = { player: 0, health: 1, dir: "S" };

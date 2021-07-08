@@ -1,11 +1,6 @@
 import { Client } from 'boardgame.io/client';
 import { Broadside } from './Game';
-
-const settings = {
-    width: 15,
-    height: 13,
-    colors: ["red", "blue"]
-}
+import { settings } from './Map';
 
 class BroadSideClient {
     constructor(rootElement) {

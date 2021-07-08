@@ -1,14 +1,10 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
+import { settings } from './Map';
 import { createMap } from './Map';
-
-const settings = {
-    width: 15,
-    height: 13
-}
 
 export const Broadside = {
     setup: () => {
-        var map = createMap();        
+        var map = createMap();
 
         console.log(map);
 
@@ -119,7 +115,7 @@ export const Broadside = {
             return moves;
         },
 
-        objectives: () => ({
+        XXobjectives: () => ({
             'less_damage': {
                 checker: (G, ctx) => {                    
                     var otherHealth = 0;
@@ -148,7 +144,6 @@ export const Broadside = {
         })
     }
 };
-
 
 function availableMoves(G, x, y, func) {
     availablePath(G, x, y, 1, 0, func);

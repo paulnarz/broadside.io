@@ -19061,9 +19061,23 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.createMap = createMap;
-exports.createTestMap = createTestMap;
+exports.settings = void 0;
+const settings = {
+  width: 0,
+  height: 0,
+  colors: ["red", "blue"]
+};
+exports.settings = settings;
 
 function createMap() {
+  //var map = createDefaultMap();
+  var map = createTestMap();
+  settings.width = map.width;
+  settings.height = map.height;
+  return map;
+}
+
+function createDefaultMap() {
   const map_string = `
 XX..1111111111X
 ..............X
@@ -19121,8 +19135,8 @@ XXXXXXXXXX00000
 
 function createTestMap() {
   const cells = [];
-  let height = 5;
-  let width = 5;
+  let height = 3;
+  let width = 3;
 
   for (let i = 0; i < width * height; i++) {
     cells[i] = {
@@ -19132,24 +19146,31 @@ function createTestMap() {
 
   let end = height * width - 1;
 
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 1; i++) {
     cells[i].ship = {
-      player: 0,
+      player: 1,
       health: 3,
       dir: "S"
     };
     cells[end - i].ship = {
-      player: 1,
+      player: 0,
       health: 3,
       dir: "N"
     };
-  } //walls
+  }
 
-
-  cells[10] = null;
-  cells[11] = null;
-  cells[13] = null;
-  cells[14] = null; //for (let i = 0; i < width; i++) {
+  cells[5].ship = {
+    player: 0,
+    health: 3,
+    dir: "N"
+  };
+  cells[6].ship = {
+    player: 0,
+    health: 3,
+    dir: "N"
+  }; //walls
+  //cells[4] = null;
+  //for (let i = 0; i < width; i++) {
   //    cells[i].ship = { player: 0, health: 1, dir: "S" };
   //    cells[i + width].ship = { player: 0, health: 1, dir: "S" };
   //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
@@ -19173,10 +19194,6 @@ var _core = require("boardgame.io/core");
 
 var _Map = require("./Map");
 
-const settings = {
-  width: 15,
-  height: 13
-};
 const Broadside = {
   setup: () => {
     var map = (0, _Map.createMap)();
@@ -19248,8 +19265,8 @@ const Broadside = {
     enumerate: (G, ctx) => {
       let moves = [];
 
-      for (let y = 0; y < settings.height; y++) {
-        for (let x = 0; x < settings.width; x++) {
+      for (let y = 0; y < _Map.settings.height; y++) {
+        for (let x = 0; x < _Map.settings.width; x++) {
           var cell = getCell(G, x, y);
 
           if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
@@ -19265,7 +19282,7 @@ const Broadside = {
 
       return moves;
     },
-    objectives: () => ({
+    XXobjectives: () => ({
       'less_damage': {
         checker: (G, ctx) => {
           var otherHealth = 0;
@@ -19273,8 +19290,8 @@ const Broadside = {
           var myHealth = 0;
           var myShips = 0;
 
-          for (let y = 0; y < settings.height; y++) {
-            for (let x = 0; x < settings.width; x++) {
+          for (let y = 0; y < _Map.settings.height; y++) {
+            for (let x = 0; x < _Map.settings.width; x++) {
               var cell = getCell(G, x, y);
 
               if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
@@ -19355,10 +19372,10 @@ function isNS(dir) {
 
 function getIndex(x, y) {
   if (x < 0) return -1;
-  if (x >= settings.width) return -1;
+  if (x >= _Map.settings.width) return -1;
   if (y < 0) return -1;
-  if (y >= settings.height) return -1;
-  return y * settings.width + x;
+  if (y >= _Map.settings.height) return -1;
+  return y * _Map.settings.width + x;
 }
 
 function getCell(G, x, y) {
@@ -19373,11 +19390,7 @@ var _client = require("boardgame.io/client");
 
 var _Game = require("./Game");
 
-const settings = {
-  width: 15,
-  height: 13,
-  colors: ["red", "blue"]
-};
+var _Map = require("./Map");
 
 class BroadSideClient {
   constructor(rootElement) {
@@ -19397,11 +19410,11 @@ class BroadSideClient {
     // Create cells in rows for the Tic-Tac-Toe board.
     const rows = [];
 
-    for (let i = 0; i < settings.height; i++) {
+    for (let i = 0; i < _Map.settings.height; i++) {
       const cells = [];
 
-      for (let j = 0; j < settings.width; j++) {
-        const id = settings.width * i + j;
+      for (let j = 0; j < _Map.settings.width; j++) {
+        const id = _Map.settings.width * i + j;
         cells.push(`<td class="cell" data-id="${id}"></td>`);
       }
 
@@ -19428,10 +19441,10 @@ class BroadSideClient {
 
         this._selectedCell.classList.add("selected");
       } else {
-        const x1 = this._selectedId % settings.width;
-        const y1 = Math.floor(this._selectedId / settings.width);
-        const x2 = id % settings.width;
-        const y2 = Math.floor(id / settings.width);
+        const x1 = this._selectedId % _Map.settings.width;
+        const y1 = Math.floor(this._selectedId / _Map.settings.width);
+        const x2 = id % _Map.settings.width;
+        const y2 = Math.floor(id / _Map.settings.width);
         this._selectedId = null;
 
         this._selectedCell.classList.remove("selected");
@@ -19475,7 +19488,7 @@ class BroadSideClient {
     } else if (gridCell.ship) {
       const ship = gridCell.ship;
       cell.textContent = ship.health + " " + ship.dir;
-      cell.style.color = settings.colors[ship.player];
+      cell.style.color = _Map.settings.colors[ship.player];
       cell.style.background = "";
     } else {
       cell.textContent = "";
@@ -19488,7 +19501,7 @@ class BroadSideClient {
 
 const appElement = document.getElementById('app');
 const app = new BroadSideClient(appElement);
-},{"boardgame.io/client":"node_modules/boardgame.io/dist/esm/client.js","./Game":"src/Game.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"boardgame.io/client":"node_modules/boardgame.io/dist/esm/client.js","./Game":"src/Game.js","./Map":"src/Map.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -19516,7 +19529,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54473" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57779" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
