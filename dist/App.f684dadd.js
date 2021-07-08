@@ -19065,19 +19065,19 @@ exports.createTestMap = createTestMap;
 
 function createMap() {
   const map_string = `
-00............0
-..............0
+XX..0000000000X
+..............X
 ...............
 ...............
-.............00
-0.....00.....00
-00...0000...000
-00.............
-00.............
-000............
-000............
-0000000000.....
-0000000000.....
+.............XX
+X.....XX.....XX
+XX...XXXX...XXX
+XX.............
+XX.............
+XXX............
+XXX............
+XXXXXXXXXX11111
+XXXXXXXXXX11111
 `;
   const cells = [];
   let lines = map_string.trim().replace(/\n/g, '<br/>').replace(/\s/g, '').split('<br/>');
@@ -19094,7 +19094,19 @@ function createMap() {
 
     for (let x = 0; x < width; x++) {
       let square = line[x];
-      if (square == ".") cells.push({
+      if (square == "0") cells.push({
+        ship: {
+          player: 0,
+          health: 3,
+          dir: "S"
+        }
+      });else if (square == "1") cells.push({
+        ship: {
+          player: 1,
+          health: 3,
+          dir: "N"
+        }
+      });else if (square == ".") cells.push({
         ship: null
       });else cells.push(null);
     }
@@ -19413,9 +19425,9 @@ class BroadSideClient {
         this._selectedCell.classList.add("selected");
       } else {
         const x1 = this._selectedId % settings.width;
-        const y1 = Math.floor(this._selectedId / settings.height);
+        const y1 = Math.floor(this._selectedId / settings.width);
         const x2 = id % settings.width;
-        const y2 = Math.floor(id / settings.height);
+        const y2 = Math.floor(id / settings.width);
         this._selectedId = null;
 
         this._selectedCell.classList.remove("selected");
@@ -19500,7 +19512,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51856" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59925" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

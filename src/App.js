@@ -52,9 +52,9 @@ class BroadSideClient {
             }
             else {
                 const x1 = this._selectedId % settings.width;
-                const y1 = Math.floor(this._selectedId / settings.height);
+                const y1 = Math.floor(this._selectedId / settings.width);
                 const x2 = id % settings.width;
-                const y2 = Math.floor(id / settings.height);
+                const y2 = Math.floor(id / settings.width);
                 this._selectedId = null;
                 this._selectedCell.classList.remove("selected");
                 this._selectedCell = null;
