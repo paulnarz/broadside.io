@@ -119,23 +119,27 @@ export const Broadside = {
             return moves;
         },
 
-        XXobjectives: () => ({
-            'damage-05': {
+        objectives: () => ({
+            'less_damage': {
                 checker: (G, ctx) => {                    
                     var otherHealth = 0;
+                    var otherShips = 0;
                     var myHealth = 0;
+                    var myShips = 0;
                     for (let y = 0; y < settings.height; y++) {
                         for (let x = 0; x < settings.width; x++) {
                             var cell = getCell(G, x, y);
                             if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
                                 myHealth += cell.ship.health;
+                                myShips++;
                             }
                             if (cell && cell.ship && cell.ship.player != ctx.currentPlayer) {
                                 otherHealth += cell.ship.health;
+                                otherShips++;
                             }
                         }
                     }
-                    if (myHealth > otherHealth)
+                    if (myHealth > otherHealth || myShips > otherShips)
                         return true;
                     return false;
                 },

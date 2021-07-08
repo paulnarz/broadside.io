@@ -19265,11 +19265,13 @@ const Broadside = {
 
       return moves;
     },
-    XXobjectives: () => ({
-      'damage-05': {
+    objectives: () => ({
+      'less_damage': {
         checker: (G, ctx) => {
           var otherHealth = 0;
+          var otherShips = 0;
           var myHealth = 0;
+          var myShips = 0;
 
           for (let y = 0; y < settings.height; y++) {
             for (let x = 0; x < settings.width; x++) {
@@ -19277,15 +19279,17 @@ const Broadside = {
 
               if (cell && cell.ship && cell.ship.player == ctx.currentPlayer) {
                 myHealth += cell.ship.health;
+                myShips++;
               }
 
               if (cell && cell.ship && cell.ship.player != ctx.currentPlayer) {
                 otherHealth += cell.ship.health;
+                otherShips++;
               }
             }
           }
 
-          if (myHealth > otherHealth) return true;
+          if (myHealth > otherHealth || myShips > otherShips) return true;
           return false;
         },
         weight: 10
@@ -19512,7 +19516,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64871" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54473" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
