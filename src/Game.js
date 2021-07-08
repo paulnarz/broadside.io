@@ -20,6 +20,12 @@ export const Broadside = {
             cells[end - i].ship = { player: 1, health: 3, dir: "N" };
         }
 
+        //walls
+        cells[10] = null;
+        cells[11] = null;
+        cells[13] = null;
+        cells[14] = null;
+
         //for (let i = 0; i < settings.width; i++) {
         //    cells[i].ship = { player: 0, health: 1, dir: "S" };
         //    cells[i + settings.width].ship = { player: 0, health: 1, dir: "S" };
@@ -54,7 +60,7 @@ export const Broadside = {
 
             const sourceCell = G.cells[sourceIndex];
 
-            if (!sourceCell.ship)
+            if (!sourceCell || !sourceCell.ship)
                 return INVALID_MOVE;
 
             const ship = sourceCell.ship;
@@ -103,7 +109,7 @@ export const Broadside = {
         var total = [0, 0];
 
         G.cells.forEach(cell => {
-            if (cell.ship)
+            if (cell && cell.ship)
                 total[cell.ship.player]++;
         });
 
@@ -133,7 +139,7 @@ export const Broadside = {
             return moves;
         },
 
-        objectives: () => ({
+        XXobjectives: () => ({
             'damage-05': {
                 checker: (G, ctx) => {                    
                     var otherHealth = 0;
@@ -151,6 +157,7 @@ export const Broadside = {
                     }
                     if (myHealth > otherHealth)
                         return true;
+                    return false;
                 },
                 weight: 10,
             },
@@ -188,7 +195,7 @@ function checkPath(G, x1, y1, x2, y2) {
         cx += dx;
         cy += dy;
         let cell = getCell(G, cx, cy);
-        if (cell.ship)
+        if (!cell || cell.ship)
             return false;
     }
     return true;

@@ -16540,6 +16540,7 @@ function instance$x($$self, $$props, $$invalidate) {
   let bot;
 
   if (client.game.ai) {
+    console.log("My bot with objectives");
     bot = new _ai92d.M({
       game: client.game,
       enumerate: client.game.ai.enumerate,
@@ -19090,12 +19091,17 @@ const Broadside = {
         health: 3,
         dir: "N"
       };
-    } //for (let i = 0; i < settings.width; i++) {
+    } //walls
+
+
+    cells[10] = null;
+    cells[11] = null;
+    cells[13] = null;
+    cells[14] = null; //for (let i = 0; i < settings.width; i++) {
     //    cells[i].ship = { player: 0, health: 1, dir: "S" };
     //    cells[i + settings.width].ship = { player: 0, health: 1, dir: "S" };
     //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
     //}
-
 
     return {
       cells: cells
@@ -19113,7 +19119,7 @@ const Broadside = {
       if (x1 === x2 && y1 === y2) return _core.INVALID_MOVE;
       if (x1 !== x2 && y1 !== y2) return _core.INVALID_MOVE;
       const sourceCell = G.cells[sourceIndex];
-      if (!sourceCell.ship) return _core.INVALID_MOVE;
+      if (!sourceCell || !sourceCell.ship) return _core.INVALID_MOVE;
       const ship = sourceCell.ship;
       if (ship.player != ctx.currentPlayer) return _core.INVALID_MOVE;
       if (!checkPath(G, x1, y1, x2, y2)) return _core.INVALID_MOVE;
@@ -19148,7 +19154,7 @@ const Broadside = {
   endIf: (G, ctx) => {
     var total = [0, 0];
     G.cells.forEach(cell => {
-      if (cell.ship) total[cell.ship.player]++;
+      if (cell && cell.ship) total[cell.ship.player]++;
     });
     if (total[0] == 0 && total[1] == 0) return {
       draw: true
@@ -19181,7 +19187,7 @@ const Broadside = {
 
       return moves;
     },
-    objectives: () => ({
+    XXobjectives: () => ({
       'damage-05': {
         checker: (G, ctx) => {
           var otherHealth = 0;
@@ -19202,6 +19208,7 @@ const Broadside = {
           }
 
           if (myHealth > otherHealth) return true;
+          return false;
         },
         weight: 10
       }
@@ -19237,7 +19244,7 @@ function checkPath(G, x1, y1, x2, y2) {
     cx += dx;
     cy += dy;
     let cell = getCell(G, cx, cy);
-    if (cell.ship) return false;
+    if (!cell || cell.ship) return false;
   }
 
   return true;
@@ -19365,8 +19372,8 @@ class BroadSideClient {
 
     cells.forEach(cell => {
       const cellId = parseInt(cell.dataset.id);
-      const ship = state.G.cells[cellId].ship;
-      this.displayShip(cell, ship);
+      const gridCell = state.G.cells[cellId];
+      this.displayCell(cell, gridCell);
     }); // Get the gameover message element.
 
     const messageEl = this.rootElement.querySelector('.winner'); // Update the element to show a winner if any.
@@ -19378,13 +19385,20 @@ class BroadSideClient {
     }
   }
 
-  displayShip(cell, ship) {
-    if (ship) {
+  displayCell(cell, gridCell) {
+    if (!gridCell) {
+      cell.textContent = "";
+      cell.style.color = "";
+      cell.style.background = "#000";
+    } else if (gridCell.ship) {
+      const ship = gridCell.ship;
       cell.textContent = ship.health + " " + ship.dir;
       cell.style.color = settings.colors[ship.player];
+      cell.style.background = "";
     } else {
       cell.textContent = "";
       cell.style.color = "";
+      cell.style.background = "";
     }
   }
 
@@ -19420,7 +19434,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52292" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52628" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

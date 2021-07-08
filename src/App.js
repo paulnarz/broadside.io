@@ -75,8 +75,8 @@ class BroadSideClient {
         // Update cells to display the values in game state.
         cells.forEach(cell => {
             const cellId = parseInt(cell.dataset.id);
-            const ship = state.G.cells[cellId].ship;
-            this.displayShip(cell, ship);
+            const gridCell = state.G.cells[cellId];
+            this.displayCell(cell, gridCell);
         });
         // Get the gameover message element.
         const messageEl = this.rootElement.querySelector('.winner');
@@ -91,14 +91,22 @@ class BroadSideClient {
         }
     }
 
-    displayShip(cell, ship) {
-        if (ship) {
+    displayCell(cell, gridCell) {
+        if (!gridCell) {
+            cell.textContent = "";
+            cell.style.color = "";
+            cell.style.background = "#000";
+        }
+        else if (gridCell.ship) {
+            const ship = gridCell.ship;
             cell.textContent = ship.health + " " + ship.dir;
             cell.style.color = settings.colors[ship.player];
+            cell.style.background = "";
         }
         else {
             cell.textContent = "";
             cell.style.color = "";
+            cell.style.background = "";
         }
     }
 }
