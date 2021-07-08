@@ -2,8 +2,8 @@ import { Client } from 'boardgame.io/client';
 import { Broadside } from './Game';
 
 const settings = {
-    width: 5,
-    height: 5,
+    width: 15,
+    height: 13,
     colors: ["blue", "red"]
 }
 
@@ -25,7 +25,7 @@ class BroadSideClient {
         for (let i = 0; i < settings.height; i++) {
             const cells = [];
             for (let j = 0; j < settings.width; j++) {
-                const id = settings.height * i + j;
+                const id = settings.width * i + j;
                 cells.push(`<td class="cell" data-id="${id}"></td>`);
             }
             rows.push(`<tr>${cells.join('')}</tr>`);

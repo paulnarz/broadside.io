@@ -19054,7 +19054,102 @@ const PlayerView = {
   }
 };
 exports.PlayerView = PlayerView;
-},{"./turn-order-62966a9c.js":"node_modules/boardgame.io/dist/esm/turn-order-62966a9c.js","immer":"node_modules/immer/dist/immer.esm.js","lodash.isplainobject":"node_modules/lodash.isplainobject/index.js"}],"src/Game.js":[function(require,module,exports) {
+},{"./turn-order-62966a9c.js":"node_modules/boardgame.io/dist/esm/turn-order-62966a9c.js","immer":"node_modules/immer/dist/immer.esm.js","lodash.isplainobject":"node_modules/lodash.isplainobject/index.js"}],"src/Map.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createMap = createMap;
+exports.createTestMap = createTestMap;
+
+function createMap() {
+  const map_string = `
+00............0
+..............0
+...............
+...............
+.............00
+0.....00.....00
+00...0000...000
+00.............
+00.............
+000............
+000............
+0000000000.....
+0000000000.....
+`;
+  const cells = [];
+  let lines = map_string.trim().replace(/\n/g, '<br/>').replace(/\s/g, '').split('<br/>');
+  let height = lines.length;
+  let width = 0;
+
+  for (let y = 0; y < height; y++) {
+    if (lines[y].length > width) width = lines[y].length;
+  }
+
+  for (let y = 0; y < height; y++) {
+    let line = lines[y];
+    console.log(line);
+
+    for (let x = 0; x < width; x++) {
+      let square = line[x];
+      if (square == ".") cells.push({
+        ship: null
+      });else cells.push(null);
+    }
+  }
+
+  return {
+    width: width,
+    height: height,
+    cells: cells
+  };
+}
+
+function createTestMap() {
+  const cells = [];
+  let height = 5;
+  let width = 5;
+
+  for (let i = 0; i < width * height; i++) {
+    cells[i] = {
+      ship: null
+    };
+  }
+
+  let end = height * width - 1;
+
+  for (let i = 0; i < 2; i++) {
+    cells[i].ship = {
+      player: 0,
+      health: 3,
+      dir: "S"
+    };
+    cells[end - i].ship = {
+      player: 1,
+      health: 3,
+      dir: "N"
+    };
+  } //walls
+
+
+  cells[10] = null;
+  cells[11] = null;
+  cells[13] = null;
+  cells[14] = null; //for (let i = 0; i < width; i++) {
+  //    cells[i].ship = { player: 0, health: 1, dir: "S" };
+  //    cells[i + width].ship = { player: 0, health: 1, dir: "S" };
+  //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
+  //}
+
+  return {
+    width: width,
+    height: height,
+    cells: cells
+  };
+}
+},{}],"src/Game.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19064,47 +19159,18 @@ exports.Broadside = void 0;
 
 var _core = require("boardgame.io/core");
 
+var _Map = require("./Map");
+
 const settings = {
-  width: 5,
-  height: 5
+  width: 15,
+  height: 13
 };
 const Broadside = {
   setup: () => {
-    const cells = [];
-
-    for (let i = 0; i < settings.width * settings.height; i++) {
-      cells[i] = {
-        ship: null
-      };
-    }
-
-    let end = settings.height * settings.width - 1;
-
-    for (let i = 0; i < 2; i++) {
-      cells[i].ship = {
-        player: 0,
-        health: 3,
-        dir: "S"
-      };
-      cells[end - i].ship = {
-        player: 1,
-        health: 3,
-        dir: "N"
-      };
-    } //walls
-
-
-    cells[10] = null;
-    cells[11] = null;
-    cells[13] = null;
-    cells[14] = null; //for (let i = 0; i < settings.width; i++) {
-    //    cells[i].ship = { player: 0, health: 1, dir: "S" };
-    //    cells[i + settings.width].ship = { player: 0, health: 1, dir: "S" };
-    //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
-    //}
-
+    var map = (0, _Map.createMap)();
+    console.log(map);
     return {
-      cells: cells
+      cells: map.cells
     };
   },
   turn: {
@@ -19284,7 +19350,7 @@ function getCell(G, x, y) {
   if (index === -1) return null;
   return G.cells[index];
 }
-},{"boardgame.io/core":"node_modules/boardgame.io/dist/esm/core.js"}],"src/App.js":[function(require,module,exports) {
+},{"boardgame.io/core":"node_modules/boardgame.io/dist/esm/core.js","./Map":"src/Map.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 var _client = require("boardgame.io/client");
@@ -19292,8 +19358,8 @@ var _client = require("boardgame.io/client");
 var _Game = require("./Game");
 
 const settings = {
-  width: 5,
-  height: 5,
+  width: 15,
+  height: 13,
   colors: ["blue", "red"]
 };
 
@@ -19319,7 +19385,7 @@ class BroadSideClient {
       const cells = [];
 
       for (let j = 0; j < settings.width; j++) {
-        const id = settings.height * i + j;
+        const id = settings.width * i + j;
         cells.push(`<td class="cell" data-id="${id}"></td>`);
       }
 
@@ -19434,7 +19500,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52628" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51856" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

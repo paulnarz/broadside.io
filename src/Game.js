@@ -1,39 +1,19 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
+import { createMap } from './Map';
 
 const settings = {
-    width: 5,
-    height: 5
+    width: 15,
+    height: 13
 }
 
 export const Broadside = {
     setup: () => {
-        const cells = [];
+        var map = createMap();        
 
-        for (let i = 0; i < settings.width * settings.height; i++) {
-            cells[i] = { ship: null };
-        }
-
-        let end = settings.height * settings.width - 1;
-
-        for (let i = 0; i < 2; i++) {
-            cells[i].ship = { player: 0, health: 3, dir: "S" };
-            cells[end - i].ship = { player: 1, health: 3, dir: "N" };
-        }
-
-        //walls
-        cells[10] = null;
-        cells[11] = null;
-        cells[13] = null;
-        cells[14] = null;
-
-        //for (let i = 0; i < settings.width; i++) {
-        //    cells[i].ship = { player: 0, health: 1, dir: "S" };
-        //    cells[i + settings.width].ship = { player: 0, health: 1, dir: "S" };
-        //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
-        //}
+        console.log(map);
 
         return {
-            cells: cells
+            cells: map.cells
         };
     },
 
