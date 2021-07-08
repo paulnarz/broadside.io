@@ -1,6 +1,6 @@
 export function createMap() {
     const map_string = `
-XX..0000000000X
+XX..1111111111X
 ..............X
 ...............
 ...............
@@ -11,8 +11,8 @@ XX.............
 XX.............
 XXX............
 XXX............
-XXXXXXXXXX11111
-XXXXXXXXXX11111
+XXXXXXXXXX00000
+XXXXXXXXXX00000
 `;
 
     const cells = [];
@@ -32,9 +32,9 @@ XXXXXXXXXX11111
         for (let x = 0; x < width; x++) {
             let square = line[x];
             if (square == "0")
-                cells.push({ ship: { player: 0, health: 3, dir: "S" } });
+                cells.push({ ship: { player: 0, health: 3, dir: "N" } });
             else if (square == "1")
-                cells.push({ ship: { player: 1, health: 3, dir: "N" } });
+                cells.push({ ship: { player: 1, health: 3, dir: "S" } });
             else if (square == ".")
                 cells.push({ ship: null });
             else

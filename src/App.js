@@ -4,7 +4,7 @@ import { Broadside } from './Game';
 const settings = {
     width: 15,
     height: 13,
-    colors: ["blue", "red"]
+    colors: ["red", "blue"]
 }
 
 class BroadSideClient {

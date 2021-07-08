@@ -19065,7 +19065,7 @@ exports.createTestMap = createTestMap;
 
 function createMap() {
   const map_string = `
-XX..0000000000X
+XX..1111111111X
 ..............X
 ...............
 ...............
@@ -19076,8 +19076,8 @@ XX.............
 XX.............
 XXX............
 XXX............
-XXXXXXXXXX11111
-XXXXXXXXXX11111
+XXXXXXXXXX00000
+XXXXXXXXXX00000
 `;
   const cells = [];
   let lines = map_string.trim().replace(/\n/g, '<br/>').replace(/\s/g, '').split('<br/>');
@@ -19098,13 +19098,13 @@ XXXXXXXXXX11111
         ship: {
           player: 0,
           health: 3,
-          dir: "S"
+          dir: "N"
         }
       });else if (square == "1") cells.push({
         ship: {
           player: 1,
           health: 3,
-          dir: "N"
+          dir: "S"
         }
       });else if (square == ".") cells.push({
         ship: null
@@ -19372,7 +19372,7 @@ var _Game = require("./Game");
 const settings = {
   width: 15,
   height: 13,
-  colors: ["blue", "red"]
+  colors: ["red", "blue"]
 };
 
 class BroadSideClient {
@@ -19512,7 +19512,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59925" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64871" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
