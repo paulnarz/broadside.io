@@ -19065,13 +19065,19 @@ exports.settings = void 0;
 const settings = {
   width: 0,
   height: 0,
-  colors: ["red", "blue"]
+  colors: ["red", "blue"],
+  transforms: {
+    "N": 180,
+    "S": 0,
+    "E": 270,
+    "W": 90
+  }
 };
 exports.settings = settings;
 
 function createMap() {
-  //var map = createDefaultMap();
-  var map = createTestMap();
+  var map = createDefaultMap(); //var map = createTestMap();
+
   settings.width = map.width;
   settings.height = map.height;
   return map;
@@ -19485,15 +19491,22 @@ class BroadSideClient {
       cell.textContent = "";
       cell.style.color = "";
       cell.style.background = "#000";
+      cell.style["background-image"] = "";
+      cell.style.transform = "";
     } else if (gridCell.ship) {
-      const ship = gridCell.ship;
-      cell.textContent = ship.health + " " + ship.dir;
+      const ship = gridCell.ship; //cell.textContent = ship.health + " " + ship.dir;
+
       cell.style.color = _Map.settings.colors[ship.player];
       cell.style.background = "";
+      let url = "url(assets/ship_" + _Map.settings.colors[ship.player] + "_" + ship.health + ".png";
+      cell.style["background-image"] = url;
+      cell.style.transform = "rotate(" + _Map.settings.transforms[ship.dir] + "deg)";
     } else {
       cell.textContent = "";
       cell.style.color = "";
       cell.style.background = "";
+      cell.style["background-image"] = "";
+      cell.style.transform = "";
     }
   }
 
@@ -19529,7 +19542,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57779" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62883" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

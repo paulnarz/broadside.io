@@ -91,17 +91,24 @@ class BroadSideClient {
             cell.textContent = "";
             cell.style.color = "";
             cell.style.background = "#000";
+            cell.style["background-image"] = "";
+            cell.style.transform = "";
         }
         else if (gridCell.ship) {
-            const ship = gridCell.ship;
-            cell.textContent = ship.health + " " + ship.dir;
+            const ship = gridCell.ship;            
+            //cell.textContent = ship.health + " " + ship.dir;
             cell.style.color = settings.colors[ship.player];
             cell.style.background = "";
+            let url = "url(assets/ship_" + settings.colors[ship.player] + "_" + ship.health + ".png";            
+            cell.style["background-image"] = url;
+            cell.style.transform = "rotate(" + settings.transforms[ship.dir] + "deg)";
         }
-        else {
+        else {            
             cell.textContent = "";
             cell.style.color = "";
             cell.style.background = "";
+            cell.style["background-image"] = "";
+            cell.style.transform = "";
         }
     }
 }

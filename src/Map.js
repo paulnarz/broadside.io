@@ -1,12 +1,18 @@
 export const settings = {
     width: 0,
     height: 0,
-    colors: ["red", "blue"]
+    colors: ["red", "blue"],
+    transforms: {
+        "N": 180,
+        "S": 0,
+        "E": 270,
+        "W": 90,
+    }
 }
 
 export function createMap() {
-    //var map = createDefaultMap();
-    var map = createTestMap();
+    var map = createDefaultMap();
+    //var map = createTestMap();
     settings.width = map.width;
     settings.height = map.height;
     return map;
