@@ -93,10 +93,10 @@ export const Broadside = {
             return { draw: true };
 
         if (total[0] == 0)
-            return { winner: 1 };
+            return { winner: "1" };
 
         if (total[1] == 0)
-            return { winner: 0 };
+            return { winner: "0" };
     },
 
     ai: {
@@ -115,7 +115,7 @@ export const Broadside = {
             return moves;
         },
 
-        XXobjectives: () => ({
+        objectives: () => ({
             'less_damage': {
                 checker: (G, ctx) => {                    
                     var otherHealth = 0;
@@ -139,7 +139,7 @@ export const Broadside = {
                         return true;
                     return false;
                 },
-                weight: 10,
+                weight: 0.25,
             },
         })
     }

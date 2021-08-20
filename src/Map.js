@@ -52,9 +52,9 @@ XXXXXXXXXX00000
         for (let x = 0; x < width; x++) {
             let square = line[x];
             if (square == "0")
-                cells.push({ ship: { player: 0, health: 3, dir: "N" } });
+                cells.push({ ship: { player: "0", health: 3, dir: "N" } });
             else if (square == "1")
-                cells.push({ ship: { player: 1, health: 3, dir: "S" } });
+                cells.push({ ship: { player: "1", health: 3, dir: "S" } });
             else if (square == ".")
                 cells.push({ ship: null });
             else
@@ -78,24 +78,38 @@ function createTestMap() {
         cells[i] = { ship: null };
     }
 
-    let end = height * width - 1;
-
-    for (let i = 0; i < 1; i++) {
-        cells[i].ship = { player: 1, health: 3, dir: "S" };
-        cells[end - i].ship = { player: 0, health: 3, dir: "N" };
-    }
-
-    cells[5].ship = { player: 0, health: 3, dir: "N" };
-    cells[6].ship = { player: 0, health: 3, dir: "N" };
+    cells[0].ship = { player: "1", health: 3, dir: "S" };
+    cells[5].ship = { player: "0", health: 3, dir: "N" };
+    cells[7].ship = { player: "0", health: 3, dir: "N" };
+    cells[8].ship = { player: "0", health: 3, dir: "N" };
 
     //walls
     //cells[4] = null;
 
     //for (let i = 0; i < width; i++) {
-    //    cells[i].ship = { player: 0, health: 1, dir: "S" };
-    //    cells[i + width].ship = { player: 0, health: 1, dir: "S" };
-    //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
+    //    cells[i].ship = { player: "0", health: 1, dir: "S" };
+    //    cells[i + width].ship = { player: "0", health: 1, dir: "S" };
+    //    cells[end - i].ship = { player: "1", health: 3, dir: "N" };
     //}
+
+    return {
+        width: width,
+        height: height,
+        cells: cells
+    };
+}
+
+function createEvenSmallerTestMap() {
+    const cells = [];
+    let height = 2;
+    let width = 3;
+
+    for (let i = 0; i < width * height; i++) {
+        cells[i] = { ship: null };
+    }
+
+    cells[0].ship = { player: "1", health: 1, dir: "S" };
+    cells[5].ship = { player: "0", health: 1, dir: "N" };    
 
     return {
         width: width,

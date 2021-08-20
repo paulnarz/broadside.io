@@ -19116,13 +19116,13 @@ XXXXXXXXXX00000
       let square = line[x];
       if (square == "0") cells.push({
         ship: {
-          player: 0,
+          player: "0",
           health: 3,
           dir: "N"
         }
       });else if (square == "1") cells.push({
         ship: {
-          player: 1,
+          player: "1",
           health: 3,
           dir: "S"
         }
@@ -19150,38 +19150,61 @@ function createTestMap() {
     };
   }
 
-  let end = height * width - 1;
-
-  for (let i = 0; i < 1; i++) {
-    cells[i].ship = {
-      player: 1,
-      health: 3,
-      dir: "S"
-    };
-    cells[end - i].ship = {
-      player: 0,
-      health: 3,
-      dir: "N"
-    };
-  }
-
+  cells[0].ship = {
+    player: "1",
+    health: 3,
+    dir: "S"
+  };
   cells[5].ship = {
-    player: 0,
+    player: "0",
     health: 3,
     dir: "N"
   };
-  cells[6].ship = {
-    player: 0,
+  cells[7].ship = {
+    player: "0",
+    health: 3,
+    dir: "N"
+  };
+  cells[8].ship = {
+    player: "0",
     health: 3,
     dir: "N"
   }; //walls
   //cells[4] = null;
   //for (let i = 0; i < width; i++) {
-  //    cells[i].ship = { player: 0, health: 1, dir: "S" };
-  //    cells[i + width].ship = { player: 0, health: 1, dir: "S" };
-  //    cells[end - i].ship = { player: 1, health: 3, dir: "N" };
+  //    cells[i].ship = { player: "0", health: 1, dir: "S" };
+  //    cells[i + width].ship = { player: "0", health: 1, dir: "S" };
+  //    cells[end - i].ship = { player: "1", health: 3, dir: "N" };
   //}
 
+  return {
+    width: width,
+    height: height,
+    cells: cells
+  };
+}
+
+function createEvenSmallerTestMap() {
+  const cells = [];
+  let height = 2;
+  let width = 3;
+
+  for (let i = 0; i < width * height; i++) {
+    cells[i] = {
+      ship: null
+    };
+  }
+
+  cells[0].ship = {
+    player: "1",
+    health: 1,
+    dir: "S"
+  };
+  cells[5].ship = {
+    player: "0",
+    health: 1,
+    dir: "N"
+  };
   return {
     width: width,
     height: height,
@@ -19261,10 +19284,10 @@ const Broadside = {
       draw: true
     };
     if (total[0] == 0) return {
-      winner: 1
+      winner: "1"
     };
     if (total[1] == 0) return {
-      winner: 0
+      winner: "0"
     };
   },
   ai: {
@@ -19288,7 +19311,7 @@ const Broadside = {
 
       return moves;
     },
-    XXobjectives: () => ({
+    objectives: () => ({
       'less_damage': {
         checker: (G, ctx) => {
           var otherHealth = 0;
@@ -19315,7 +19338,7 @@ const Broadside = {
           if (myHealth > otherHealth || myShips > otherShips) return true;
           return false;
         },
-        weight: 10
+        weight: 0.25
       }
     })
   }
@@ -19542,7 +19565,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62883" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53566" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
